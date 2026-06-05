@@ -11,7 +11,10 @@ interface PostListProps {
 }
 
 const PostList: React.FC<PostListProps> = ({ currentUser }) => {
-  const { loading, error, data, subscribeToMore } = useQuery(GET_POSTS);
+  const { loading, error, data, subscribeToMore, fetchMore } = useQuery(GET_POSTS, {
+    variables: { limit: 5, cursor: null },
+    notifyOnNetworkStatusChange: true,
+  });
 
   // Post form state
   const [title, setTitle] = useState<string>('');
@@ -19,11 +22,11 @@ const PostList: React.FC<PostListProps> = ({ currentUser }) => {
 
   // Mutations
   const [addPost, { loading: addLoading }] = useMutation(ADD_POST, {
-    refetchQueries: [{ query: GET_POSTS }],
+    refetchQueries: [{ query: GET_POSTS, variables: { limit: 5, cursor: null } }],
   });
 
   const [deletePost] = useMutation(DELETE_POST, {
-    refetchQueries: [{ query: GET_POSTS }],
+    refetchQueries: [{ query: GET_POSTS, variables: { limit: 5, cursor: null } }],
   });
 
   // Subscribe to real-time posts
@@ -35,18 +38,44 @@ const PostList: React.FC<PostListProps> = ({ currentUser }) => {
         const newPost = subscriptionData.data.postAdded;
 
         // Prevent duplicates
-        if (prev.posts.find((p: Post) => p.id === newPost.id)) {
+        if (prev.posts.posts.find((p: Post) => p.id === newPost.id)) {
           return prev;
         }
 
         return {
           ...prev,
-          posts: [newPost, ...prev.posts],
+          posts: {
+            ...prev.posts,
+            posts: [newPost, ...prev.posts.posts],
+          },
         };
       },
     });
     return () => unsubscribe();
   }, [subscribeToMore]);
+
+  // Intersection Observer for Infinite Scroll
+  const observerRef = React.useRef<IntersectionObserver | null>(null);
+  const sensorRef = React.useCallback(
+    (node: HTMLDivElement | null) => {
+      if (loading) return;
+      if (observerRef.current) observerRef.current.disconnect();
+      if (!node) return;
+
+      observerRef.current = new IntersectionObserver((entries) => {
+        if (entries[0].isIntersecting && data?.posts.hasMore) {
+          fetchMore({
+            variables: {
+              cursor: data.posts.cursor,
+            },
+          });
+        }
+      });
+
+      observerRef.current.observe(node);
+    },
+    [loading, data?.posts.hasMore, data?.posts.cursor, fetchMore]
+  );
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
@@ -60,10 +89,10 @@ const PostList: React.FC<PostListProps> = ({ currentUser }) => {
     setContent('');
   };
 
-  if (loading) return <div className="status-message">Loading publication feed...</div>;
+  if (loading && !data) return <div className="status-message">Loading publication feed...</div>;
   if (error) return <div className="status-message">Error fetching publications: {error.message}</div>;
 
-  const posts: Post[] = data?.posts || [];
+  const posts: Post[] = data?.posts.posts || [];
 
   const getInitials = (name?: string) => {
     if (!name) return '?';
@@ -159,6 +188,16 @@ const PostList: React.FC<PostListProps> = ({ currentUser }) => {
                 </div>
               );
             })}
+
+            {/* Infinite Scroll Sensor */}
+            <div ref={sensorRef} style={{ height: '20px', margin: '10px 0' }} />
+
+            {/* Fetching more loading indicator */}
+            {loading && (
+              <div className="status-message" style={{ padding: '10px 0', fontSize: '0.9rem' }}>
+                Loading more articles...
+              </div>
+            )}
           </div>
         )}
       </div>

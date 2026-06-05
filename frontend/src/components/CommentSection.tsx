@@ -1,7 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import { useMutation, useSubscription, useApolloClient } from '@apollo/client';
 import { ADD_COMMENT } from '../graphql/mutations';
-import { GET_POSTS } from '../graphql/queries';
+import { GET_SINGLE_POST } from '../graphql/queries';
 import { COMMENT_ADDED_SUBSCRIPTION } from '../graphql/subscriptions';
 import CommentNode from './CommentNode';
 import { Comment, User } from '../types';
@@ -21,12 +21,16 @@ const CommentSection: React.FC<CommentSectionProps> = ({ postId, comments = [], 
     variables: { postId }
   });
 
-  // When a comment or reply is added, refetch posts to rebuild the nested tree
+  // When a comment or reply is added, fetch the updated single post to rebuild the nested tree
   useEffect(() => {
     if (subData) {
-      client.refetchQueries({ include: ["GetPosts"] });
+      client.query({
+        query: GET_SINGLE_POST,
+        variables: { id: postId },
+        fetchPolicy: 'network-only'
+      });
     }
-  }, [subData, client]);
+  }, [subData, client, postId]);
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
@@ -42,7 +46,7 @@ const CommentSection: React.FC<CommentSectionProps> = ({ postId, comments = [], 
   };
 
   const [addComment, { loading }] = useMutation(ADD_COMMENT, {
-    refetchQueries: [{ query: GET_POSTS }],
+    refetchQueries: [{ query: GET_SINGLE_POST, variables: { id: postId } }],
     onCompleted: () => {
       setCommentContent('');
     }

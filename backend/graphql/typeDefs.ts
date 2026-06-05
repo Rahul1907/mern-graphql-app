@@ -19,6 +19,12 @@ const typeDefs = gql`
     comments: [Comment!]!
   }
 
+  type PostConnection {
+    posts: [Post!]!
+    cursor: String
+    hasMore: Boolean!
+  }
+
   type User {
     id: ID!
     name: String!
@@ -34,7 +40,7 @@ const typeDefs = gql`
   type Query {
     users: [User]
     user(id: ID!): User
-    posts: [Post]
+    posts(limit: Int, cursor: String): PostConnection!
     post(id: ID!): Post
     me: User
   }
@@ -45,7 +51,6 @@ const typeDefs = gql`
   }
 
   type Mutation {
-    addUser(name: String!, email: String!): User
     updateUser(id: ID!, name: String, email: String): User
     deleteUser(id: ID!): String
     addPost(title: String!, content: String!): Post

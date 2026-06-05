@@ -25,8 +25,29 @@ const resolvers = {
       return await User.findById(id);
     },
 
-    posts: async (): Promise<IPost[]> => {
-      return await Post.find().sort({ createdAt: -1 });
+    posts: async (
+      _: any,
+      { limit = 5, cursor }: { limit?: number; cursor?: string }
+    ): Promise<{ posts: IPost[]; cursor: string | null; hasMore: boolean }> => {
+      const query: Record<string, any> = {};
+      if (cursor) {
+        query._id = { $lt: cursor };
+      }
+
+      const limitVal = Math.min(limit, 50);
+      const posts = await Post.find(query)
+        .sort({ _id: -1 })
+        .limit(limitVal + 1);
+
+      const hasMore = posts.length > limitVal;
+      const results = hasMore ? posts.slice(0, limitVal) : posts;
+      const nextCursor = results.length > 0 ? results[results.length - 1].id : null;
+
+      return {
+        posts: results,
+        cursor: nextCursor,
+        hasMore,
+      };
     },
 
     post: async (_: any, { id }: { id: string }): Promise<IPost | null> => {
@@ -83,11 +104,6 @@ const resolvers = {
   },
 
   Mutation: {
-    addUser: async (_: any, { name, email }: { name: string; email: string }): Promise<IUser> => {
-      const user = new User({ name, email, password: 'defaultpassword123' });
-      return await user.save();
-    },
-
     updateUser: async (
       _: any,
       { id, name, email }: { id: string; name?: string; email?: string },

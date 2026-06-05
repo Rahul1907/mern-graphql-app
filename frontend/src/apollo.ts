@@ -4,8 +4,11 @@ import { GraphQLWsLink } from '@apollo/client/link/subscriptions';
 import { createClient } from 'graphql-ws';
 import { getMainDefinition } from '@apollo/client/utilities';
 
+const rawUrl = process.env.REACT_APP_BACKEND_SERVER_URL || 'http://localhost:5000/graphql';
+const wsUrl = rawUrl.replace(/^http/, 'ws');
+
 const httpLink = createHttpLink({
-  uri: 'http://localhost:5000/graphql',
+  uri: rawUrl,
 });
 
 const authLink = setContext((_, { headers }) => {
@@ -20,7 +23,7 @@ const authLink = setContext((_, { headers }) => {
 
 const wsLink = new GraphQLWsLink(
   createClient({
-    url: 'ws://localhost:5000/graphql',
+    url: wsUrl,
     connectionParams: () => {
       const token = localStorage.getItem('token');
       return {
@@ -44,7 +47,37 @@ const splitLink = split(
 
 const client = new ApolloClient({
   link: splitLink,
-  cache: new InMemoryCache(),
+  cache: new InMemoryCache({
+    typePolicies: {
+      Query: {
+        fields: {
+          posts: {
+            keyArgs: false,
+            merge(existing, incoming, { args }) {
+              const existingPosts = existing ? existing.posts : [];
+              const incomingPosts = incoming ? incoming.posts : [];
+              
+              const mergedPosts = !args || !args.cursor
+                ? incomingPosts
+                : [...existingPosts, ...incomingPosts];
+                
+              const uniquePosts = mergedPosts.reduce((acc: any[], post: any) => {
+                if (!acc.some(p => p.__ref === post.__ref)) {
+                  acc.push(post);
+                }
+                return acc;
+              }, []);
+
+              return {
+                ...incoming,
+                posts: uniquePosts,
+              };
+            },
+          },
+        },
+      },
+    },
+  }),
 });
 
 export default client;

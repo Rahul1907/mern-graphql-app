@@ -1,7 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import { useQuery } from '@apollo/client';
 import { GET_ME } from './graphql/queries';
-import AddUser from './components/AddUser';
+import UserProfile from './components/UserProfile';
 import PostList from './components/PostList';
 import Login from './components/Login';
 import { User } from './types';
@@ -49,7 +49,7 @@ const App: React.FC = () => {
 
       <div className="dashboard-grid">
         <aside>
-          <AddUser currentUser={currentUser} onLogout={handleLogout} />
+          <UserProfile currentUser={currentUser} onLogout={handleLogout} />
         </aside>
 
         <main>

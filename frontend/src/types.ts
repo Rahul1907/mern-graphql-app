@@ -22,3 +22,13 @@ export interface Comment {
   replies: Comment[];
   createdAt: string;
 }
+
+declare global {
+  const process: {
+    env: {
+      REACT_APP_BACKEND_SERVER_URL?: string;
+      [key: string]: string | undefined;
+    };
+  };
+}
+

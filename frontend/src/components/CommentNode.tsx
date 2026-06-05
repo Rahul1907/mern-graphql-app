@@ -1,7 +1,7 @@
 import React, { useState } from 'react';
 import { useMutation } from '@apollo/client';
 import { ADD_COMMENT } from '../graphql/mutations';
-import { GET_POSTS } from '../graphql/queries';
+import { GET_SINGLE_POST } from '../graphql/queries';
 import { Comment, User } from '../types';
 
 interface CommentNodeProps {
@@ -15,7 +15,7 @@ const CommentNode: React.FC<CommentNodeProps> = ({ comment, postId, currentUser 
   const [replyContent, setReplyContent] = useState<string>('');
 
   const [addReply, { loading }] = useMutation(ADD_COMMENT, {
-    refetchQueries: [{ query: GET_POSTS }],
+    refetchQueries: [{ query: GET_SINGLE_POST, variables: { id: postId } }],
     onCompleted: () => {
       setReplyContent('');
       setShowReplyBox(false);

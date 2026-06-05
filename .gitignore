@@ -5,3 +5,4 @@ backend/.env
 .env
 backend/dist
 frontend/dist
+frontend/build

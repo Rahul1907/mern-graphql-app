@@ -26,16 +26,58 @@ export const GET_ME = gql`
 `;
 
 export const GET_POSTS = gql`
-  query GetPosts {
-    posts {
-      id
-      title
-      content
-      author {
+  query GetPosts($limit: Int, $cursor: String) {
+    posts(limit: $limit, cursor: $cursor) {
+      posts {
         id
-        name
-        email
+        title
+        content
+        author {
+          id
+          name
+          email
+        }
+        comments {
+          id
+          content
+          createdAt
+          author {
+            id
+            name
+            email
+          }
+          replies {
+            id
+            content
+            createdAt
+            author {
+              id
+              name
+              email
+            }
+            replies {
+              id
+              content
+              createdAt
+              author {
+                id
+                name
+                email
+              }
+            }
+          }
+        }
       }
+      cursor
+      hasMore
+    }
+  }
+`;
+
+export const GET_SINGLE_POST = gql`
+  query GetSinglePost($id: ID!) {
+    post(id: $id) {
+      id
       comments {
         id
         content

@@ -1,12 +1,12 @@
 import React from 'react';
 import { User } from '../types';
 
-interface AddUserProps {
+interface UserProfileProps {
   currentUser: User | null;
   onLogout: () => void;
 }
 
-const AddUser: React.FC<AddUserProps> = ({ currentUser, onLogout }) => {
+const UserProfile: React.FC<UserProfileProps> = ({ currentUser, onLogout }) => {
   const getInitials = (name: string) => {
     if (!name) return '?';
     return name
@@ -38,4 +38,4 @@ const AddUser: React.FC<AddUserProps> = ({ currentUser, onLogout }) => {
   );
 };
 
-export default AddUser;
+export default UserProfile;
