@@ -16,19 +16,22 @@ importers:
         version: 3.13.0(graphql@16.14.0)
       apollo-server-express:
         specifier: ^3.13.0
-        version: 3.13.0(express@4.22.2)(graphql@16.14.0)
+        version: 3.13.0(express@4.22.2(supports-color@5.5.0))(graphql@16.14.0)(supports-color@5.5.0)
       bcryptjs:
         specifier: ^3.0.3
         version: 3.0.3
       cors:
         specifier: ^2.8.5
         version: 2.8.6
+      dataloader:
+        specifier: ^2.2.3
+        version: 2.2.3
       dotenv:
         specifier: ^16.4.5
         version: 16.6.1
       express:
         specifier: ^4.19.2
-        version: 4.22.2
+        version: 4.22.2(supports-color@5.5.0)
       graphql:
         specifier: ^16.9.0
         version: 16.14.0
@@ -43,7 +46,7 @@ importers:
         version: 9.0.3
       mongoose:
         specifier: ^8.5.1
-        version: 8.24.0
+        version: 8.24.0(supports-color@5.5.0)
       ws:
         specifier: ^8.18.0
         version: 8.21.0
@@ -504,6 +507,9 @@ packages:
 
   cssfilter@0.0.10:
     resolution: {integrity: sha512-FAaLDaplstoRsDR8XGYH51znUN0UY7nMc6Z9/fvE8EXGwvJE9hu7W2vHwx1+bd6gCYnln9nLbzxFTrcO9YQDZw==}
+
+  dataloader@2.2.3:
+    resolution: {integrity: sha512-y2krtASINtPFS1rSDjacrFgn1dcUuoREVabwlOGOe4SdxenREqwjwjElAdwvbGM7kgZz9a3KVicWR7vcz8rnzA==}
 
   debug@2.6.9:
     resolution: {integrity: sha512-bC7ElrdJaJnPbAP+1EotYvqZsb3ecl5wi6Bfi6BJTUcNowp6cvspg0jXznRTKDjm/E7AdgFBVeAPVMNcKGsHMA==}
@@ -1509,7 +1515,7 @@ snapshots:
     dependencies:
       graphql: 16.14.0
 
-  apollo-server-express@3.13.0(express@4.22.2)(graphql@16.14.0):
+  apollo-server-express@3.13.0(express@4.22.2(supports-color@5.5.0))(graphql@16.14.0)(supports-color@5.5.0):
     dependencies:
       '@types/accepts': 1.3.7
       '@types/body-parser': 1.19.2
@@ -1519,9 +1525,9 @@ snapshots:
       accepts: 1.3.8
       apollo-server-core: 3.13.0(graphql@16.14.0)
       apollo-server-types: 3.8.0(graphql@16.14.0)
-      body-parser: 1.20.5
+      body-parser: 1.20.5(supports-color@5.5.0)
       cors: 2.8.6
-      express: 4.22.2
+      express: 4.22.2(supports-color@5.5.0)
       graphql: 16.14.0
       parseurl: 1.3.3
     transitivePeerDependencies:
@@ -1563,11 +1569,11 @@ snapshots:
 
   binary-extensions@2.3.0: {}
 
-  body-parser@1.20.5:
+  body-parser@1.20.5(supports-color@5.5.0):
     dependencies:
       bytes: 3.1.2
       content-type: 1.0.5
-      debug: 2.6.9
+      debug: 2.6.9(supports-color@5.5.0)
       depd: 2.0.0
       destroy: 1.2.0
       http-errors: 2.0.1
@@ -1648,9 +1654,13 @@ snapshots:
 
   cssfilter@0.0.10: {}
 
-  debug@2.6.9:
+  dataloader@2.2.3: {}
+
+  debug@2.6.9(supports-color@5.5.0):
     dependencies:
       ms: 2.0.0
+    optionalDependencies:
+      supports-color: 5.5.0
 
   debug@4.4.3(supports-color@5.5.0):
     dependencies:
@@ -1698,21 +1708,21 @@ snapshots:
 
   etag@1.8.1: {}
 
-  express@4.22.2:
+  express@4.22.2(supports-color@5.5.0):
     dependencies:
       accepts: 1.3.8
       array-flatten: 1.1.1
-      body-parser: 1.20.5
+      body-parser: 1.20.5(supports-color@5.5.0)
       content-disposition: 0.5.4
       content-type: 1.0.5
       cookie: 0.7.2
       cookie-signature: 1.0.7
-      debug: 2.6.9
+      debug: 2.6.9(supports-color@5.5.0)
       depd: 2.0.0
       encodeurl: 2.0.0
       escape-html: 1.0.3
       etag: 1.8.1
-      finalhandler: 1.3.2
+      finalhandler: 1.3.2(supports-color@5.5.0)
       fresh: 0.5.2
       http-errors: 2.0.1
       merge-descriptors: 1.0.3
@@ -1724,8 +1734,8 @@ snapshots:
       qs: 6.15.2
       range-parser: 1.2.1
       safe-buffer: 5.2.1
-      send: 0.19.2
-      serve-static: 1.16.3
+      send: 0.19.2(supports-color@5.5.0)
+      serve-static: 1.16.3(supports-color@5.5.0)
       setprototypeof: 1.2.0
       statuses: 2.0.2
       type-is: 1.6.18
@@ -1740,9 +1750,9 @@ snapshots:
     dependencies:
       to-regex-range: 5.0.1
 
-  finalhandler@1.3.2:
+  finalhandler@1.3.2(supports-color@5.5.0):
     dependencies:
-      debug: 2.6.9
+      debug: 2.6.9(supports-color@5.5.0)
       encodeurl: 2.0.0
       escape-html: 1.0.3
       on-finished: 2.4.1
@@ -1948,13 +1958,13 @@ snapshots:
       bson: 6.10.4
       mongodb-connection-string-url: 3.0.2
 
-  mongoose@8.24.0:
+  mongoose@8.24.0(supports-color@5.5.0):
     dependencies:
       bson: 6.10.4
       kareem: 2.6.3
       mongodb: 6.20.0
       mpath: 0.9.0
-      mquery: 5.0.0
+      mquery: 5.0.0(supports-color@5.5.0)
       ms: 2.1.3
       sift: 17.1.3
     transitivePeerDependencies:
@@ -1969,7 +1979,7 @@ snapshots:
 
   mpath@0.9.0: {}
 
-  mquery@5.0.0:
+  mquery@5.0.0(supports-color@5.5.0):
     dependencies:
       debug: 4.4.3(supports-color@5.5.0)
     transitivePeerDependencies:
@@ -2052,9 +2062,9 @@ snapshots:
 
   semver@7.8.1: {}
 
-  send@0.19.2:
+  send@0.19.2(supports-color@5.5.0):
     dependencies:
-      debug: 2.6.9
+      debug: 2.6.9(supports-color@5.5.0)
       depd: 2.0.0
       destroy: 1.2.0
       encodeurl: 2.0.0
@@ -2070,12 +2080,12 @@ snapshots:
     transitivePeerDependencies:
       - supports-color
 
-  serve-static@1.16.3:
+  serve-static@1.16.3(supports-color@5.5.0):
     dependencies:
       encodeurl: 2.0.0
       escape-html: 1.0.3
       parseurl: 1.3.3
-      send: 0.19.2
+      send: 0.19.2(supports-color@5.5.0)
     transitivePeerDependencies:
       - supports-color
 

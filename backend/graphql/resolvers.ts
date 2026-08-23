@@ -3,6 +3,7 @@ import { PubSub } from 'graphql-subscriptions';
 import User, { IUser } from '../models/User';
 import Post, { IPost } from '../models/Post';
 import Comment, { IComment } from '../models/Comment';
+import { DataLoaders } from './loaders';
 
 export interface AuthUser {
   id: string;
@@ -11,6 +12,7 @@ export interface AuthUser {
 
 export interface ResolverContext {
   user?: AuthUser;
+  loaders: DataLoaders;
 }
 
 const pubsub = new PubSub();
@@ -61,18 +63,17 @@ const resolvers = {
   },
 
   User: {
-    posts: async (parent: IUser): Promise<IPost[]> => {
-      return await Post.find({ author: parent.id });
+    posts: async (parent: IUser, _: any, context: ResolverContext): Promise<IPost[]> => {
+      return await context.loaders.userPostsLoader.load(parent.id);
     },
   },
 
   Post: {
-    author: async (parent: IPost): Promise<IUser | null> => {
-      return await User.findById(parent.author);
+    author: async (parent: IPost, _: any, context: ResolverContext): Promise<IUser | null> => {
+      return await context.loaders.userLoader.load(parent.author.toString());
     },
-    comments: async (parent: IPost): Promise<IComment[]> => {
-      // Return top-level comments for this post
-      return await Comment.find({ post: parent.id, parentComment: { $exists: false } }).sort({ createdAt: 1 });
+    comments: async (parent: IPost, _: any, context: ResolverContext): Promise<IComment[]> => {
+      return await context.loaders.postCommentsLoader.load(parent.id);
     },
   },
 
@@ -80,15 +81,15 @@ const resolvers = {
     post: async (parent: IComment): Promise<IPost | null> => {
       return await Post.findById(parent.post);
     },
-    author: async (parent: IComment): Promise<IUser | null> => {
-      return await User.findById(parent.author);
+    author: async (parent: IComment, _: any, context: ResolverContext): Promise<IUser | null> => {
+      return await context.loaders.userLoader.load(parent.author.toString());
     },
     parentComment: async (parent: IComment): Promise<IComment | null> => {
       if (!parent.parentComment) return null;
       return await Comment.findById(parent.parentComment);
     },
-    replies: async (parent: IComment): Promise<IComment[]> => {
-      return await Comment.find({ parentComment: parent.id }).sort({ createdAt: 1 });
+    replies: async (parent: IComment, _: any, context: ResolverContext): Promise<IComment[]> => {
+      return await context.loaders.commentRepliesLoader.load(parent.id);
     },
   },
 

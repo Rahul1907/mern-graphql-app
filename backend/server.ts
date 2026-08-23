@@ -13,7 +13,8 @@ import jwt from 'jsonwebtoken';
 
 import connectDB from './config/db';
 import typeDefs from './graphql/typeDefs';
-import resolvers, { AuthUser } from './graphql/resolvers';
+import resolvers, { AuthUser, ResolverContext } from './graphql/resolvers';
+import { createLoaders } from './graphql/loaders';
 
 const startServer = async (): Promise<void> => {
   const app = express();
@@ -34,10 +35,10 @@ const startServer = async (): Promise<void> => {
   const serverCleanup = useServer(
     {
       schema,
-      context: (ctx) => {
+      context: (ctx): ResolverContext => {
         const connectionParams = ctx.connectionParams || {};
         const authHeader = (connectionParams.authorization || '') as string;
-        let user: AuthUser | null = null;
+        let user: AuthUser | undefined = undefined;
         if (authHeader.startsWith('Bearer ')) {
           const token = authHeader.substring(7);
           try {
@@ -46,7 +47,7 @@ const startServer = async (): Promise<void> => {
             // Proceed without user
           }
         }
-        return { user };
+        return { user, loaders: createLoaders() };
       },
     },
     wsServer
@@ -66,9 +67,9 @@ const startServer = async (): Promise<void> => {
         },
       },
     ],
-    context: ({ req }): { user: AuthUser | null } => {
+    context: ({ req }): ResolverContext => {
       const authHeader = (req.headers.authorization || '') as string;
-      let user: AuthUser | null = null;
+      let user: AuthUser | undefined = undefined;
       if (authHeader.startsWith('Bearer ')) {
         const token = authHeader.substring(7);
         try {
@@ -77,7 +78,7 @@ const startServer = async (): Promise<void> => {
           // Proceed without user
         }
       }
-      return { user };
+      return { user, loaders: createLoaders() };
     },
   });
 
